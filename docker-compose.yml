@@ -1,0 +1,27 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres:16
+    container_name: smart_restaurant_postgres_db
+    env_file:
+      - .env
+    volumes:
+    - postgres_data:/var/lib/postgresql/data/
+    restart: always
+
+  api:
+    build: .
+    container_name: smart_api
+    env_file:
+      - .env
+    ports:
+    - 8000:8000
+    volumes:
+    - ./:/app
+    depends_on:
+      - db
+    restart: always
+
+volumes:
+   postgres_data:
