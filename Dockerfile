@@ -6,6 +6,9 @@ RUN apt-get update && apt-get install -y netcat-openbsd
 
 COPY requirements.txt .
 
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1
+
 RUN pip install --upgrade pip && pip install --no-cache-dir -r requirements.txt
 
 COPY . .

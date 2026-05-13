@@ -1,8 +1,8 @@
 from enum import StrEnum
 
 class DeviceFunction(StrEnum):
-    CHECKOUT = "Checkout"
-    KITCHEN = "Kitchen"
+    CHECKOUT = "checkout"
+    KITCHEN = "kitchen"
 
     @classmethod
     def choices(cls):

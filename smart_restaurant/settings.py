@@ -1,5 +1,6 @@
 from pathlib import Path
 import os
+import uuid
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -12,7 +13,8 @@ POSTGRES_DB = os.getenv("POSTGRES_DB")
 
 # Device
 
-DEVICE_AUTHENTICATION_TOKEN = os.getenv("DEVICE_AUTHENTICATION_TOKEN")
+DEVICE_AUTHENTICATION_TOKEN = uuid.UUID(os.getenv("DEVICE_AUTHENTICATION_TOKEN"))
+DEVICE_LOGIN_TOKEN = uuid.UUID(os.getenv("DEVICE_LOGIN_TOKEN"))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
