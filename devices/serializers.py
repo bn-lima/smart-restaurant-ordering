@@ -3,6 +3,7 @@ from .models import Device
 from django.conf import settings
 from .validators import PASSWORD_VALIDATOR
 from .services import authenticate_device
+from .constants import DeviceFunction
 
 class AuthenticateDeviceSerializer(serializers.ModelSerializer): # Serializer responsável por validar token e autenticar o dispositivo
     device_authentication_token = serializers.UUIDField(required=True) # Token de autenticação
@@ -56,3 +57,21 @@ class LoginDeviceSerializer(serializers.Serializer):
     
     def save(self, **kwargs):
         return self.validated_data.get("token")
+class UpdateDeviceFunctionSerializer(serializers.Serializer): # Serializer responsável por mudar a função do dispositivo
+    function = serializers.ChoiceField(choices=DeviceFunction.choices()) # Função do dispositivo
+
+    def validate(self, data):
+        device = self.context.get("device")
+
+        if data["function"] == device.function: # Valida se a nova função é a mesma do dispositivo
+            raise serializers.ValidationError("This device already has this function")
+
+        return data
+    
+    def save(self, **kwargs):
+        device = self.context.get("device")
+        
+        device.function = self.validated_data["function"] # Define a nova função do dispositivo
+        device.save()
+
+        return device
