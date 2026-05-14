@@ -15,6 +15,7 @@ POSTGRES_DB = os.getenv("POSTGRES_DB")
 
 DEVICE_AUTHENTICATION_TOKEN = uuid.UUID(os.getenv("DEVICE_AUTHENTICATION_TOKEN"))
 DEVICE_LOGIN_TOKEN = uuid.UUID(os.getenv("DEVICE_LOGIN_TOKEN"))
+DEVICE_RESET_PASSWORD_TOKEN = uuid.UUID(os.getenv("DEVICE_RESET_PASSWORD_TOKEN"))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/

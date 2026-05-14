@@ -75,3 +75,31 @@ class UpdateDeviceFunctionSerializer(serializers.Serializer): # Serializer respo
         device.save()
 
         return device
+    
+class UpdateDevicePasswordSerializer(serializers.Serializer): # Serializer responsável por atualizar a senha do dispositivo logado
+    new_password = serializers.CharField(required=True, max_length=128, validators=[PASSWORD_VALIDATOR])
+    confirm_new_password = serializers.CharField(required=True, max_length=128, validators=[PASSWORD_VALIDATOR])
+    device_reset_password_token = serializers.UUIDField(required=True) # Token para validar reset de senha
+
+    def validate(self, data):
+        device = self.context.get("device") # Dispositivo logado
+        new_password = data["new_password"]
+
+        if data["device_reset_password_token"] != settings.DEVICE_RESET_PASSWORD_TOKEN: # Valida se o token de reset está correto
+            raise serializers.ValidationError("Invalid reset token")
+
+        if device.check_password(new_password): # Valida se a nova senha é igual a senha atual
+            raise serializers.ValidationError("Your new password cannot be the same as your current password")
+        
+        if new_password != data["confirm_new_password"]: # verifica se as duas senhas são iguais
+            raise serializers.ValidationError("Passwords do not match")
+        
+        return data
+    
+    def save(self, **kwargs):
+        device = self.context.get("device")
+
+        device.set_password(self.validated_data.get("new_password")) # Define a nova senha
+        device.save()
+
+        return device
