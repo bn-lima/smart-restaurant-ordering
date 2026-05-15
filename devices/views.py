@@ -2,14 +2,14 @@ from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework import status, permissions
 from rest_framework.response import Response
-from .serializers import AuthenticateDeviceSerializer, LoginDeviceSerializer, UpdateDeviceFunctionSerializer, UpdateDevicePasswordSerializer
+from .serializers import RegisterDeviceSerializer, LoginDeviceSerializer, UpdateDeviceFunctionSerializer, UpdateDevicePasswordSerializer, CreateAdminUserSerializer
 
-class AuthenticateDevice(APIView): # View responsável por autenticar um dispositivo
+class RegisterDevice(APIView): # View responsável por autenticar um dispositivo
     permission_classes = [permissions.AllowAny]
 
     def post(self, request, *args, **kwargs):
 
-        serializer = AuthenticateDeviceSerializer(data=request.data)
+        serializer = RegisterDeviceSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
 
@@ -41,3 +41,12 @@ class UpdateDeviceFunction(APIView): # View responsável por mudar a função do
         serializer.save()
 
         return Response({"detail": "Device function updated successfully"}, status=status.HTTP_200_OK)
+class CreateAdminUser(APIView): # View responsável por criar super usuário
+    permission_classes = [permissions.AllowAny]
+
+    def post(self, request, *args, **kwargs):
+        serializer = CreateAdminUserSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        return Response({"detail": "Admin user created successfully"}, status=status.HTTP_201_CREATED)
