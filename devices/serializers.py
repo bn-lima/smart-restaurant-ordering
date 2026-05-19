@@ -44,10 +44,10 @@ class LoginDeviceSerializer(serializers.Serializer):
 
     def validate(self, data):
         
-        if data["device_login_token"] != settings.DEVICE_LOGIN_TOKEN:
+        if data["device_login_token"] != settings.DEVICE_LOGIN_TOKEN: # Verifica se o token de login está correto
             raise serializers.ValidationError("Invalid login token")
         
-        token = authenticate_device(data["username"], data["password"])
+        token = authenticate_device(data["username"], data["password"]) # Verifica se as credenciais de login estão corretas
 
         if not token:
             raise serializers.ValidationError("Invalid credentials")
