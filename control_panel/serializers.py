@@ -57,3 +57,33 @@ class UpdateDeviceSerializer(serializers.ModelSerializer): # Serializer respons�
             self.instance.set_password(password) # Define a nova senha de forma segura
  
         return super().save(**kwargs)
+    
+class CreateDeviceSerializer(serializers.ModelSerializer): # Serializer responsável por criar um dispositivo via admin
+    confirmation_password = serializers.CharField(max_length=128, write_only=True) # Senha de confirmação do super usuário
+    confirm_password = serializers.CharField(max_length=128, validators=[PASSWORD_VALIDATOR], write_only=True) # Confirmar senha do dispositivo
+    class Meta:
+        model = Device
+        fields = ("username", "password", "confirm_password", "confirmation_password","function")
+
+    def validate(self, data):
+        super_user = self.context.get("super_user") # Super usuário responsável pela criação do dispositivo
+
+        if not super_user.check_password(data.get("confirmation_password")): # Verifica se a senha de confirmação do admin está correta
+            raise serializers.ValidationError("Invalid confirmation password")
+        
+        if data.get("password") != data.get("confirm_password"): # Valida se as senhas batem
+            raise serializers.ValidationError("Passwords do not match")
+        
+        return data
+    
+    def create(self, validated_data):
+        password = validated_data.pop("password") # Remove password dos dados validados para setar no dispositivo de forma segura
+        # Remove campos que não estão presentes no modelo Device
+        validated_data.pop("confirm_password")
+        validated_data.pop("confirmation_password")
+
+        device = Device(**validated_data) # Cria uma instância de device
+        device.set_password(password) # Define password de forma segura
+        device.save()
+
+        return device

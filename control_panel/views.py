@@ -2,7 +2,7 @@ from rest_framework.generics import ListAPIView
 from devices.models import Device
 from .pagination import DeviceListPagination
 from rest_framework import permissions, status
-from .serializers import DeviceListSerializer, UpdateDeviceSerializer
+from .serializers import DeviceListSerializer, UpdateDeviceSerializer, CreateDeviceSerializer
 from rest_framework.views import APIView
 from devices.services import get_device_by_id
 from rest_framework.response import Response
@@ -28,3 +28,13 @@ class UpdateDevice(APIView): # View responsável por atualizar dados de um dispo
         serializer.save()
 
         return Response(status=status.HTTP_200_OK)
+    
+class CreateDevice(APIView): # View responsável por criar um dispositivo via admin
+    permission_classes = [permissions.IsAdminUser]
+
+    def post(self, request, *args, **kwargs):
+        serializer = CreateDeviceSerializer(data=request.data, context={"super_user": request.user})
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        return Response({"detail": "Device created successfully"}, status=status.HTTP_201_CREATED)
