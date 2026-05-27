@@ -2,6 +2,9 @@ asarPy==1.0.1
 asgiref==3.11.1
 Django==6.0.5
 djangorestframework==3.17.1
+dotenv==0.9.9
+pillow==12.2.0
 psycopg==3.3.4
 psycopg-binary==3.3.4
+python-dotenv==1.2.2
 sqlparse==0.5.5

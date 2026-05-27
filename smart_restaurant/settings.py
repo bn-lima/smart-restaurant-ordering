@@ -1,9 +1,12 @@
 from pathlib import Path
 import os
 import uuid
+from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+load_dotenv()
 
 POSTGRES_HOST = os.getenv("POSTGRES_HOST")
 POSTGRES_USER=  os.getenv("POSTGRES_USER")
@@ -40,7 +43,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework.authtoken',
-    'devices'
+    'devices',
+    'restaurant_menu'
 ]
 
 MIDDLEWARE = [
@@ -133,3 +137,8 @@ REST_FRAMEWORK = {
 # User
 
 AUTH_USER_MODEL = 'devices.Device'
+
+# Media
+
+MEDIA_ROOT = BASE_DIR / "media"
+MEDIA_URL = "/media/"
