@@ -3,6 +3,6 @@ from .models import MenuItem
 
 @admin.register(MenuItem)
 class MenuItemAdmin(admin.ModelAdmin):
-    list_display = ("name", "description", "ingredients", "price", "active", "category")
-    search_fields = ("name", "description", "ingredients", "price", "category")
+    list_display = ("item_name", "item_ingredients", "item_price", "active", "item_category")
+    search_fields = ("item_name", "item_description", "item_ingredients", "item_price", "category")
     list_filter = ("active",)

@@ -1,10 +1,10 @@
 from .models import MenuItem
 from rest_framework.views import APIView
-from rest_framework.generics import ListAPIView
+from rest_framework.generics import ListAPIView, CreateAPIView
 from rest_framework.response import Response
 from rest_framework import status, permissions
 from django.contrib.postgres.search import SearchQuery, SearchVector
-from .serializers import MenuItemsSerializer 
+from .serializers import MenuItemsSerializer, CreateMenuItemSerializer
 from .pagination import MenuItemsPagination
 
 class MenuItems(ListAPIView):
@@ -20,10 +20,14 @@ class MenuItems(ListAPIView):
 
         if search_qp:
 
-            search_vector = SearchVector("category")  # Cria o vetor de busca baseado no campo category
+            search_vector = SearchVector("item_category")  # Cria o vetor de busca baseado no campo category
             
             search_query = SearchQuery(search_qp) # Converte o texto pesquisado em uma SearchQuery
 
             return queryset.annotate(search=search_vector).filter(search=search_query) # Adiciona o campo de busca ao queryset e filtra os resultados
         
         return queryset
+class CreateMenuItem(CreateAPIView): # View responsável por criar um novo item no menu
+    permission_classes = [permissions.IsAdminUser]
+    serializer_class = CreateMenuItemSerializer
+    queryset = MenuItem.objects.all()
