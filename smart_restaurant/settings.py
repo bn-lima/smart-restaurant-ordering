@@ -43,8 +43,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework.authtoken',
-    'devices',
-    'control_panel'
+    'devices', 
+    'control_panel',
+    'restaurant_menu'
 ]
 
 MIDDLEWARE = [
@@ -137,3 +138,8 @@ REST_FRAMEWORK = {
 # User
 
 AUTH_USER_MODEL = 'devices.Device'
+
+# Media
+
+MEDIA_ROOT = BASE_DIR / "media"
+MEDIA_URL = "/media/"
