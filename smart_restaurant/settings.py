@@ -44,11 +44,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework.authtoken',
     'devices',
-<<<<<<< HEAD
-    'control_panel'
-=======
+    'control_panel',
     'restaurant_menu'
->>>>>>> feature/restaurant_menu
 ]
 
 MIDDLEWARE = [

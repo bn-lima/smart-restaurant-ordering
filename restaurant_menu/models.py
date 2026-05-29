@@ -11,4 +11,4 @@ class MenuItem(models.Model):
     item_image = models.ImageField(default="restaurant_menu/default.png", upload_to="restaurant/menu") # Categoria do item
 
     def __str__(self):
-        return f"{self.name} - {self.price}"
+        return f"{self.item_name} - {self.item_price}"
