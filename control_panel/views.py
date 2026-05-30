@@ -2,7 +2,7 @@ from rest_framework.generics import ListAPIView
 from devices.models import Device
 from .pagination import DeviceListPagination
 from rest_framework import permissions, status
-from .serializers import DeviceListSerializer, UpdateDeviceSerializer, CreateDeviceSerializer, UpdateMenuItemSerializer
+from .serializers import DeviceListSerializer, UpdateDeviceSerializer, CreateDeviceSerializer, UpdateMenuItemSerializer, ConfirmationPasswordSerializier
 from rest_framework.views import APIView
 from devices.services import get_device_by_id
 from rest_framework.response import Response
@@ -55,3 +55,20 @@ class UpdateMenuItem(APIView): # View responsável por atualizar dados de um ite
         serializer.save()
 
         return Response(status=status.HTTP_200_OK)
+    
+class DeleteMenuItem(APIView): # View responsável por deletar um item do menu
+    permission_classes = [permissions.IsAdminUser]
+
+    def delete(self, request, pk, *args, **kwargs):
+        
+        menu_item = get_menu_item_by_id(pk) # Pega item do menu pelo id
+
+        if not menu_item: # Retorna erro caso o item não exista
+            return Response({"detail": "Menu item not found"}, status=status.HTTP_404_NOT_FOUND)
+        
+        confirmation_serializer = ConfirmationPasswordSerializier(data=request.data, context={"super_user":request.user}) # Validação da senha do super usuário
+        confirmation_serializer.is_valid(raise_exception=True)
+
+        menu_item.delete()
+        
+        return Response(status.HTTP_204_NO_CONTENT)

@@ -116,3 +116,14 @@ class UpdateMenuItemSerializer(serializers.ModelSerializer): # Serializer respon
     def save(self, **kwargs):
         self.validated_data.pop("confirmation_password") # Remove a senha de confirmação dos dados validados, pois não existe no modelo
         return super().save(**kwargs)
+    
+class ConfirmationPasswordSerializier(serializers.Serializer): # Serializer responsável por validar senha de confirmação
+    confirmation_password = serializers.CharField(required=True, max_length=128, write_only=True)
+
+    def validate(self, data):
+        super_user = self.context.get("super_user")
+
+        if not super_user.check_password(data.get("confirmation_password")):
+            raise serializers.ValidationError("Invalid confirmation password")
+        
+        return data
