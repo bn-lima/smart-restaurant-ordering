@@ -1,12 +1,11 @@
 from .models import MenuItem
 from rest_framework.views import APIView
-from rest_framework.generics import ListAPIView, CreateAPIView
+from rest_framework.generics import ListAPIView, CreateAPIView, RetrieveAPIView
 from rest_framework.response import Response
 from rest_framework import status, permissions
 from django.contrib.postgres.search import SearchQuery, SearchVector
-from .serializers import MenuItemsSerializer, CreateMenuItemSerializer
+from .serializers import MenuItemsSerializer, CreateMenuItemSerializer, MenuItemDetailSerializer
 from .pagination import MenuItemsPagination
-
 class MenuItems(ListAPIView):
     permission_classes = [permissions.IsAuthenticated]
     serializer_class = MenuItemsSerializer
@@ -31,3 +30,7 @@ class CreateMenuItem(CreateAPIView): # View responsável por criar um novo item 
     permission_classes = [permissions.IsAdminUser]
     serializer_class = CreateMenuItemSerializer
     queryset = MenuItem.objects.all()
+class MenuItemDetail(RetrieveAPIView): # View responsável por mostrar os detalhes de um item específico no menu
+    permission_classes =  [permissions.IsAuthenticated]
+    queryset = MenuItem.objects.filter(active=True)
+    serializer_class = MenuItemDetailSerializer
