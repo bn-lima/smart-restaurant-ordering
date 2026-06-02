@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from devices.models import Device
+from restaurant_menu.models import MenuItem
 from devices.validators import PASSWORD_VALIDATOR
 
 class DeviceListSerializer(serializers.ModelSerializer): # Serializer responsável por listar todos os dispositivos
@@ -87,3 +88,41 @@ class CreateDeviceSerializer(serializers.ModelSerializer): # Serializer respons�
         device.save()
 
         return device
+class UpdateMenuItemSerializer(serializers.ModelSerializer): # Serializer responsável por atualizar dados de um item do menu
+    confirmation_password = serializers.CharField(max_length=128, required=True, write_only=True)
+    class Meta:
+        model = MenuItem
+        fields = '__all__'
+
+        extra_kwargs = { # Torna todos os campos do modelo não obrigatórios
+            "item_name": {"required":False},
+            "item_description": {"required":False},
+            "item_ingredients": {"required":False},
+            "item_price": {"required":False},
+            "active": {"required":False},
+            "item_category": {"required":False},
+            "item_image": {"required":False}
+        }
+
+    def validate(self, data):
+        super_user = self.context.get("super_user") # Pega admin via context
+
+        if not super_user.check_password(data.get("confirmation_password")): # Verifica se a senha de confirmação está correta
+            raise serializers.ValidationError("Invalid confirmation password")
+        
+        return data
+    
+    def save(self, **kwargs):
+        self.validated_data.pop("confirmation_password") # Remove a senha de confirmação dos dados validados, pois não existe no modelo
+        return super().save(**kwargs)
+    
+class ConfirmationPasswordSerializier(serializers.Serializer): # Serializer responsável por validar senha de confirmação
+    confirmation_password = serializers.CharField(required=True, max_length=128, write_only=True)
+
+    def validate(self, data):
+        super_user = self.context.get("super_user")
+
+        if not super_user.check_password(data.get("confirmation_password")):
+            raise serializers.ValidationError("Invalid confirmation password")
+        
+        return data

@@ -45,7 +45,8 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'devices', 
     'control_panel',
-    'restaurant_menu'
+    'restaurant_menu',
+    'cart'
 ]
 
 MIDDLEWARE = [
