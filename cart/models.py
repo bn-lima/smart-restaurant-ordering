@@ -3,6 +3,7 @@ from .constants import CartStatusChoices
 from devices.models import Device
 from restaurant_menu.models import MenuItem
 from django.contrib import admin
+from decimal import Decimal
 class Cart(models.Model): # Modelo do carrinho
     device = models.ForeignKey(Device, related_name="carts", on_delete=models.CASCADE) # Dispositivo que criou o carrinho
     created_at = models.DateTimeField(auto_now_add=True) # Data e hora de criação do carrinho
@@ -10,7 +11,7 @@ class Cart(models.Model): # Modelo do carrinho
 
     @admin.display(description="Total")
     def get_total(self): # Retotna total do carrinho
-        return sum((item.get_subtotal()) for item in self.items.all())
+        return sum((item.get_subtotal() for item in self.items.all()), Decimal("0.00"))
 
     def __str__(self):
         return f"{self.device.username} - {self.created_at}"

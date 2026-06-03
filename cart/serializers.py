@@ -47,3 +47,30 @@ class ShowCartSerializer(serializers.ModelSerializer): # Serializer responsável
 
     def get_cart_total(self, obj): # Pega o total do carrinho
         return (obj.get_total().quantize(Decimal("0.01")))
+    
+class RemoveMenuItemFromCartSerializer(serializers.Serializer): # Serializer responsável por remover itens do carrinho
+
+    def validate(self, data):
+        cart = self.context.get("cart") # Carrinho ativo
+        menu_item = self.context.get("menu_item") # Item do menu selecionado
+
+        cart_item = is_item_in_cart(cart, menu_item) # Verifica se o item existe no carrinho
+
+        if not cart_item:
+            raise serializers.ValidationError("This item does not exist in your cart")
+        
+        data["cart_item"] = cart_item # Adiciona o cart_item em data
+        
+        return data
+
+    def save(self, **kwargs):
+        quantity = self.context.get("quantity") # Quantidade que será removida do carrinho
+        cart_item = self.validated_data.get("cart_item")
+
+        if quantity >= cart_item.quantity: # Remove o item se a quantidade zerar
+            cart_item.delete()
+
+        else:
+            cart_item.quantity -= quantity # Reduz a quantidade do item
+            cart_item.save()
+            return cart_item
