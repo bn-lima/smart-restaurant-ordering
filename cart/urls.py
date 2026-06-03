@@ -1,8 +1,9 @@
 from django.urls import path, include
-from .views import AddMenuItemToCart, RemoveMenuItemFromCart, CancelCart
+from .views import AddMenuItemToCart, RemoveMenuItemFromCart, CancelCart, CartDetail
 
 urlpatterns = [
     path("cancel/", CancelCart.as_view(), name="cancel"), # Cancela o carrinho
+    path("detail/", CartDetail.as_view(), name="detail"), # Mostra os detalhes do carrinho
 
     path("item/", include([
         path("<int:pk>/", include([

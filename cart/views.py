@@ -1,10 +1,11 @@
-from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status, permissions
+from rest_framework.generics import RetrieveAPIView
 from restaurant_menu.services import get_menu_item_by_id
 from .serializers import MenuItemQuantitySerializer, AddMenuItemToCartSerializer, ShowCartSerializer, RemoveMenuItemFromCartSerializer
 from .services import get_cart, cancel_cart
+from .models import Cart
 class AddMenuItemToCart(APIView): # Serializer responsável por adicionar um item do menu no carrinho
     permission_classes = [permissions.IsAuthenticated]
 
@@ -68,3 +69,13 @@ class CancelCart(APIView): # View responsável por cancelar um carrinho ativo
         cancel_cart(cart) # Cancela o carrinho
 
         return Response({"detail": "Cart canceled successfully"}, status=status.HTTP_200_OK)
+class CartDetail(APIView): # View responsável por mostrar os detalhes de um carrinho específico
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request, *args, **kwargs):
+        
+        cart, _ = get_cart(request.user)
+
+        response_serializer = ShowCartSerializer(instance=cart)
+
+        return Response(response_serializer.data, status=status.HTTP_200_OK)
