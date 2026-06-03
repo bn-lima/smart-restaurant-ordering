@@ -9,3 +9,7 @@ def is_item_in_cart(cart, menu_item): # Verifica se o item existe no carrinho
     except CartItem.DoesNotExist:
         return None
     return cart_item
+
+def cancel_cart(cart): # Cancela o carrinho
+    cart.status = "canceled"
+    return cart.save()

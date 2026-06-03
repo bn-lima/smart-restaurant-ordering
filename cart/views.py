@@ -4,8 +4,7 @@ from rest_framework.response import Response
 from rest_framework import status, permissions
 from restaurant_menu.services import get_menu_item_by_id
 from .serializers import MenuItemQuantitySerializer, AddMenuItemToCartSerializer, ShowCartSerializer, RemoveMenuItemFromCartSerializer
-from .services import get_cart
-
+from .services import get_cart, cancel_cart
 class AddMenuItemToCart(APIView): # Serializer responsável por adicionar um item do menu no carrinho
     permission_classes = [permissions.IsAuthenticated]
 
@@ -29,7 +28,6 @@ class AddMenuItemToCart(APIView): # Serializer responsável por adicionar um ite
         response_serializer = ShowCartSerializer(instance=cart)
 
         return Response({"detail": "Item quantity updated", "cart": response_serializer.data}, status=status.HTTP_200_OK)
-    
 class RemoveMenuItemFromCart(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
@@ -57,3 +55,16 @@ class RemoveMenuItemFromCart(APIView):
         if not cart_item: # Verifica se o item foi atualizado ou completamente removido
             return Response({"detail": "The item has been completely removed from your cart", "cart": response_serializer.data}, status=status.HTTP_200_OK)
         return Response({"detail": "Item quantity updated", "cart": response_serializer.data}, status=status.HTTP_200_OK)
+class CancelCart(APIView): # View responsável por cancelar um carrinho ativo
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request, *args, **kwargs):
+
+        cart, _ = get_cart(request.user) # Pega o carrinho ativo
+
+        if not cart.items.all().exists(): # Verifica se o carrinho está vazio
+            return Response({"detail": "You cannot cancel an empty cart"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        cancel_cart(cart) # Cancela o carrinho
+
+        return Response({"detail": "Cart canceled successfully"}, status=status.HTTP_200_OK)
