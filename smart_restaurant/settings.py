@@ -46,7 +46,8 @@ INSTALLED_APPS = [
     'devices', 
     'control_panel',
     'restaurant_menu',
-    'cart'
+    'cart',
+    'kitchen'
 ]
 
 MIDDLEWARE = [
