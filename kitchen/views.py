@@ -21,19 +21,19 @@ class Orders(ListAPIView): # View responsável por retornar uma lista de pedidos
     def get_queryset(self):
         return Order.objects.filter(delivered=False).order_by("created_at") # Retorna os pedidos não entregues, ordenados do mais recente para o mais antigo
     
-class DeliverOrder(APIView):
+class DeliverOrder(APIView): # View responsável por marcar um pedido como entregue
     permission_classes = [permissions.IsAuthenticated]
 
     def patch(self, request, pk, *args, **kwargs):
 
-        order = get_order_by_id(pk)
+        order = get_order_by_id(pk) # Pega o pedido com o mesmo id (pk) passado na requisição
 
         if not order:
             return Response({"detail": "Order object not found"}, status=status.HTTP_404_NOT_FOUND)
         
-        if order.delivered:
+        if order.delivered: # Retorna erro caso o pedido já tenha sido entregue
             return Response({"detail": "This order has already been delivered"}, status=status.HTTP_400_BAD_REQUEST)
         
-        deliver_order(order)
+        deliver_order(order) # Marca pedido como entregue
 
         return Response({"detail": "Order delivered successfully"}, status=status.HTTP_200_OK)
