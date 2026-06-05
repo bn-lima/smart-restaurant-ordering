@@ -5,8 +5,7 @@ from rest_framework.generics import ListAPIView
 from .serializers import OrdersSerializer
 from .models import Order
 from .pagination import OrdersPagination
-from cart.services import get_cart
-
+from .services import get_order_by_id, deliver_order
 class Orders(ListAPIView): # View responsável por retornar uma lista de pedidos ainda não entregues
     permission_classes = [permissions.IsAuthenticated]
     serializer_class = OrdersSerializer
@@ -21,3 +20,20 @@ class Orders(ListAPIView): # View responsável por retornar uma lista de pedidos
 
     def get_queryset(self):
         return Order.objects.filter(delivered=False).order_by("created_at") # Retorna os pedidos não entregues, ordenados do mais recente para o mais antigo
+    
+class DeliverOrder(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def patch(self, request, pk, *args, **kwargs):
+
+        order = get_order_by_id(pk)
+
+        if not order:
+            return Response({"detail": "Order object not found"}, status=status.HTTP_404_NOT_FOUND)
+        
+        if order.delivered:
+            return Response({"detail": "This order has already been delivered"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        deliver_order(order)
+
+        return Response({"detail": "Order delivered successfully"}, status=status.HTTP_200_OK)
