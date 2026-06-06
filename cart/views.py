@@ -16,6 +16,9 @@ class AddMenuItemToCart(APIView): # Serializer responsável por adicionar um ite
         if not menu_item:
             return Response({"detail": "Menu item not found"}, status=status.HTTP_404_NOT_FOUND)
         
+        if not menu_item.active:
+            return Response({"This item is not active"}, status=status.HTTP_400_BAD_REQUEST)
+        
         quantity_serializer = MenuItemQuantitySerializer(data=request.data) # Serializer responsável por validar a quantidade de itens que serão adicionados no carrinho
         quantity_serializer.is_valid(raise_exception=True)
 
@@ -23,7 +26,8 @@ class AddMenuItemToCart(APIView): # Serializer responsável por adicionar um ite
 
         cart, _ = get_cart(request.user) # Pega o carrinho referente ao dispositivo logado
 
-        add_serializer = AddMenuItemToCartSerializer(context={"cart": cart, "menu_item": menu_item, "quantity": quantity}) # Serializer responsável por mostrar as informações do carrinho
+        add_serializer = AddMenuItemToCartSerializer(data={}, context={"cart": cart, "menu_item": menu_item, "quantity": quantity}) # Serializer responsável por mostrar as informações do carrinho
+        add_serializer.is_valid(raise_exception=True)
         add_serializer.save()
 
         response_serializer = ShowCartSerializer(instance=cart)
@@ -32,7 +36,7 @@ class AddMenuItemToCart(APIView): # Serializer responsável por adicionar um ite
 class RemoveMenuItemFromCart(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
-    def patch(self, request, pk, *args, **kwargs):
+    def delete(self, request, pk, *args, **kwargs):
         
         menu_item = get_menu_item_by_id(pk) # Pega o item do menu
 
@@ -76,6 +80,7 @@ class CartDetail(APIView): # View responsável por mostrar os detalhes de um car
         
         cart, _ = get_cart(request.user)
 
-        response_serializer = ShowCartSerializer(instance=cart)
+        response_serializer = ShowCartSerializer(data={},instance=cart)
+        response_serializer.is_valid(raise_exception=True)
 
         return Response(response_serializer.data, status=status.HTTP_200_OK)

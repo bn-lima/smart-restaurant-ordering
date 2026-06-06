@@ -13,3 +13,7 @@ def is_item_in_cart(cart, menu_item): # Verifica se o item existe no carrinho
 def cancel_cart(cart): # Cancela o carrinho
     cart.status = "canceled"
     return cart.save()
+
+def remove_inactive_cart_items(cart): # Retorna FALSO se não encontrar nenhum item inativo no carrinho
+    deleted_count, _ = cart.items.filter(menu_item__active=False).delete()
+    return deleted_count > 0
