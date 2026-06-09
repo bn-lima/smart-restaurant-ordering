@@ -21,6 +21,10 @@ DEVICE_LOGIN_TOKEN = uuid.UUID(os.getenv("DEVICE_LOGIN_TOKEN"))
 DEVICE_RESET_PASSWORD_TOKEN = uuid.UUID(os.getenv("DEVICE_RESET_PASSWORD_TOKEN"))
 CREATE_SUPERUSER_TOKEN = uuid.UUID(os.getenv("CREATE_SUPERUSER_TOKEN"))
 
+# Mercado Pago
+
+MP_ACCESS_TOKEN = os.getenv("MP_ACCESS_TOKEN")
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
@@ -47,7 +51,8 @@ INSTALLED_APPS = [
     'control_panel',
     'restaurant_menu',
     'cart',
-    'kitchen'
+    'kitchen',
+    'payment'
 ]
 
 MIDDLEWARE = [

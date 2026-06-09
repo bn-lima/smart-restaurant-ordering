@@ -9,7 +9,8 @@ urlpatterns = [
     path('control_panel/', include('control_panel.urls')),
     path('menu/', include('restaurant_menu.urls')),
     path('cart/', include('cart.urls')),
-    path('kitchen/', include('kitchen.urls'))
+    path('kitchen/', include('kitchen.urls')),
+    path('payment/', include('payment.urls'))
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
