@@ -24,6 +24,7 @@ CREATE_SUPERUSER_TOKEN = uuid.UUID(os.getenv("CREATE_SUPERUSER_TOKEN"))
 # Mercado Pago
 
 MP_ACCESS_TOKEN = os.getenv("MP_ACCESS_TOKEN")
+MP_WEBHOOK_SECRET = os.getenv("MP_WEBHOOK_SECRET")
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/

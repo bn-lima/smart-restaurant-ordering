@@ -17,3 +17,10 @@ def cancel_cart(cart): # Cancela o carrinho
 def remove_inactive_cart_items(cart): # Retorna FALSO se não encontrar nenhum item inativo no carrinho
     deleted_count, _ = cart.items.filter(menu_item__active=False).delete()
     return deleted_count > 0
+
+def get_cart_by_id(id): # Pega carrinho por id
+    try:
+        cart = Cart.objects.get(id=id)
+    except Cart.DoesNotExist:
+        return None
+    return cart

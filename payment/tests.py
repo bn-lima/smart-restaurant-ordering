@@ -5,7 +5,6 @@ from cart.models import CartItem
 from restaurant_menu.models import MenuItem
 from cart.services import get_cart
 from django.urls import reverse
-
 class MockMercadoPago(APITestCase): # classe de testes do pagamento
 
     def setUp(self):
@@ -31,12 +30,23 @@ class MockMercadoPago(APITestCase): # classe de testes do pagamento
         self.cart, _ = get_cart(self.device) # obtém carrinho do dispositivo
 
         self.cart_item = CartItem.objects.create(cart=self.cart, quantity=2, menu_item=self.menu_item) # adiciona item ao carrinho
-        
 
-    @patch("payment.views.MercadoPagoClient.request") # substitui requisição real por mock
+        self.webhook_query_params = "data.id=ord_test_001" # Query string recebida no webhook
+        
+        self.webhook_json = { # Payload enviado pelo Mercado Pago
+            "action": "order.processed",
+            "api_version": "v1",
+            "type": "order",
+            "data": {
+                "id": "ord_test_001",
+                "external_reference": "Cart #1"
+            }
+        }
+
+    @patch("payment.views.MercadoPagoClient.request")
     def test_mercado_pago_request(self, mock_mercado_pago_request):
 
-        url = reverse("payment") # obtém url do endpoint
+        url = reverse("payment") # Endpoint responsável por criar o pagamento
 
         self.client.force_authenticate(user=self.device) # autentica dispositivo
 
@@ -55,4 +65,28 @@ class MockMercadoPago(APITestCase): # classe de testes do pagamento
 
         self.assertEqual(response.data["id"], "ORD_TEST") # valida id retornado
 
-        print(response.data, response.status_code) # imprime resposta do teste
+        print(response.data, response.status_code)
+
+    @patch("payment.views.validate_signature") # Mock da validação criptográfica da assinatura
+    @patch("payment.views.get_signature") # Mock da extração dos dados da assinatura
+    def test_webhook(self, mock_get_signature, mock_validate_signature):
+
+        url = reverse("webhook") # Endpoint de recebimento de eventos
+ 
+        mock_get_signature.return_value = (True, True) # Simula assinatura presente e válida
+
+        mock_validate_signature.return_value = True # Simula validação bem sucedida
+
+        response = self.client.post(
+            url,
+            data=self.webhook_json,
+            format="json",
+            HTTP_X_SIGNATURE="ts=1749500000,v1=12345678910",
+            HTTP_X_REQUEST_ID="test-request-123",
+            QUERY_STRING=self.webhook_query_params
+        )
+
+        mock_get_signature.assert_called_once() # Verifica extração da assinatura
+        mock_validate_signature.assert_called_once() # Verifica validação da assinatura
+
+        self.assertEqual(response.status_code, 200) # Webhook processado com sucesso
