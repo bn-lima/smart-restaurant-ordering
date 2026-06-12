@@ -1,31 +1,38 @@
 # smart-restaurant-ordering
 
-Protótipo de restaurante inteligente onde o pedido é feito por um tablet e, quando o pagamento é autorizado, o pedido é enviado para a cozinha. Neste momento, o projeto implementa apenas a autenticação e o gerenciamento de dispositivos internos (`checkout` e `kitchen`).
+Backend Django para um protótipo de restaurante inteligente.
+O sistema suporta registro e autenticação de dispositivos, gestão de menu, carrinho, pagamento via Mercado Pago e processamento de pedidos para a cozinha.
 
-## Visão geral
+## Visão Geral
 
-- Protótipo backend em Django 6 com Django REST Framework.
-- API para registro, login e gerenciamento de dispositivos.
-- Autenticação de dispositivos via token UUID.
-- Modelo de usuário customizado `Device` que representa dispositivos do restaurante.
-- Dois tipos de dispositivo: `checkout` e `kitchen`.
-- O fluxo de pedido e pagamento ainda não está implementado; atualmente apenas a autenticação de dispositivos existe.
+- Backend em Django 6 + Django REST Framework.
+- Autenticação por token usando `rest_framework.authentication.TokenAuthentication`.
+- Usuário customizado: `devices.Device`.
+- Dispositivos têm função: `checkout` ou `kitchen`.
+- API modular com apps: `devices`, `control_panel`, `restaurant_menu`, `cart`, `kitchen` e `payment`.
 
-## Principais funcionalidades
+## Funcionalidades
 
-- Registrar dispositivos (`checkout` ou `kitchen`).
-- Login de dispositivo com geração de token de autenticação DRF.
-- Atualizar função do dispositivo autenticado.
-- Atualizar senha do dispositivo autenticado.
-- Criar superusuário via endpoint seguro.
+- Registro e login de dispositivos.
+- Atualização de função e senha do dispositivo autenticado.
+- Gerenciamento de dispositivos e itens de menu via painel de controle admin.
+- Lista e criação de itens de menu.
+- Carrinho de compras para dispositivos autenticados.
+- Integração com Mercado Pago para criar pedidos de pagamento.
+- Recebimento de webhook do Mercado Pago para criar pedidos de cozinha quando o pagamento é confirmado.
+- Listagem e marcação de pedidos como entregues pela cozinha.
 
-## Estrutura do projeto
+## Estrutura do Projeto
 
-- `smart_restaurant/` - configurações do projeto Django.
-- `devices/` - app principal com modelo, serializers, views, URLs, e validações.
+- `smart_restaurant/` - configurações Django.
+- `devices/` - autenticação de dispositivos e modelos de usuário.
+- `control_panel/` - endpoints administrativos para dispositivos e menu.
+- `restaurant_menu/` - catálogo de itens do menu.
+- `cart/` - carrinho de compras do dispositivo.
+- `kitchen/` - gerenciamento de pedidos de cozinha.
+- `payment/` - integração com Mercado Pago e webhook.
 - `Dockerfile` - imagem para rodar a API.
-- `docker-compose.yml` - orquestra PostgreSQL e API.
-- `.env` - variáveis de ambiente para banco e tokens.
+- `docker-compose.yml` - orquestra API e PostgreSQL.
 
 ## Tecnologias
 
@@ -34,35 +41,58 @@ Protótipo de restaurante inteligente onde o pedido é feito por um tablet e, qu
 - Django REST Framework 3.17.1
 - PostgreSQL 16
 - psycopg 3
+- requests
+- python-dotenv
 
-## Endpoints
+## Endpoints Principais
 
-A API está disponível sob `/device/`.
+### Root da API
 
-- `POST /device/register/`
-  - Registra novo dispositivo.
-  - Campos: `username`, `password`, `confirm_password`, `device_authentication_token`, `function`.
+- `POST /device/register/` - registra novo dispositivo.
+- `POST /device/register/admin/` - cria superusuário com token de criação.
+- `POST /device/login/` - faz login e retorna `login_token`.
+- `PATCH /device/update/function/` - atualiza a função do dispositivo autenticado.
+- `POST /device/update/password/` - altera a senha do dispositivo autenticado.
 
-- `POST /device/register/admin/`
-  - Cria superusuário.
-  - Campos: `username`, `password`, `confirm_password`, `create_admin_token`.
+### Menu
 
-- `POST /device/login/`
-  - Faz login de dispositivo.
-  - Campos: `username`, `password`, `device_login_token`.
-  - Retorna `login_token`.
+- `GET /menu/` - lista itens ativos do menu.
+- `POST /menu/item/create/` - cria um novo item de menu (apenas admin).
+- `GET /menu/item/<pk>/detail/` - detalha item de menu ativo.
 
-- `PATCH /device/update/function/`
-  - Atualiza a função do dispositivo autenticado.
-  - Campos: `function`.
+### Carrinho
 
-- `POST /device/update/password/`
-  - Atualiza a senha do dispositivo autenticado.
-  - Campos: `new_password`, `confirm_new_password`, `device_reset_password_token`.
+- `GET /cart/detail/` - mostra o carrinho ativo do dispositivo autenticado.
+- `POST /cart/item/<pk>/add/` - adiciona ou atualiza quantidade de item no carrinho.
+- `DELETE /cart/item/<pk>/remove/` - remove ou diminui quantidade do item no carrinho.
+- `POST /cart/cancel/` - cancela o carrinho ativo.
 
-## Variáveis de ambiente
+### Pagamento
 
-O projeto exige as seguintes variáveis no arquivo `.env`:
+- `POST /payment/payment/` - cria ordem de pagamento no Mercado Pago para o carrinho ativo.
+- `POST /payment/webhook/` - recebe notificações do Mercado Pago e cria pedidos de cozinha.
+
+### Cozinha
+
+- `GET /kitchen/orders/` - lista pedidos não entregues (apenas para dispositivos `kitchen`).
+- `PATCH /kitchen/order/<pk>/deliver/` - marca pedido como entregue.
+
+### Painel de Controle/Admin
+
+- `GET /control_panel/devices/` - lista todos os dispositivos (apenas admin).
+- `POST /control_panel/device/create/` - cria dispositivo via admin.
+- `PATCH /control_panel/device/<pk>/update/` - atualiza dispositivo específico.
+- `PATCH /control_panel/item/<pk>/update/` - atualiza item do menu.
+- `DELETE /control_panel/item/<pk>/delete/` - exclui item de menu (apenas admin).
+
+## Autenticação
+
+- As rotas que exigem autenticação usam `TokenAuthentication`.
+- Envie o cabeçalho `Authorization: Token <login_token>`.
+
+## Requisitos de Ambiente
+
+O projeto requer as seguintes variáveis no arquivo `.env`:
 
 - `POSTGRES_HOST`
 - `POSTGRES_USER`
@@ -73,25 +103,28 @@ O projeto exige as seguintes variáveis no arquivo `.env`:
 - `DEVICE_LOGIN_TOKEN`
 - `DEVICE_RESET_PASSWORD_TOKEN`
 - `CREATE_SUPERUSER_TOKEN`
+- `MP_ACCESS_TOKEN`
+- `MP_WEBHOOK_SECRET`
 
 ## Execução com Docker
 
-1. Configure o arquivo `.env` com os valores desejados.
+1. Crie um arquivo `.env` com as variáveis acima.
 2. Execute:
 
 ```bash
 docker compose up --build
 ```
 
-A aplicação ficará disponível em `http://localhost:8000`.
+A API estará disponível em `http://localhost:8000`.
+
+## Interface Admin Django
+
+- A interface Django admin fica em `/admin/`.
+- Crie um superusuário usando o endpoint `POST /device/register/admin/`.
 
 ## Observações
 
-- A autenticação da API usa `TokenAuthentication` do Django REST Framework.
-- O modelo de usuário padrão foi substituído por `devices.Device` com campo `function`.
-- As senhas devem ter pelo menos 8 caracteres e não podem conter espaços.
-- O projeto é um protótipo: ainda não há fluxo completo de pedidos pagos nem transmissão real para a cozinha, apenas autenticação de dispositivos.
-
-## Admin Django
-
-A interface administrativa está em `/admin/`. Para acessar, crie um superusuário via `POST /device/register/admin/`.
+- `devices.Device` é o modelo de usuário personalizado usado em `AUTH_USER_MODEL`.
+- O fluxo de pagamento foi iniciado via Mercado Pago, usando `payment` para criar ordens e `webhook` para confirmação.
+- A API contém suporte básico para menu, carrinho e pedidos, mas não inclui frontend.
+- Ao rodar com Docker, o container `api` aguarda o PostgreSQL ficar disponível antes de aplicar as migrations.
