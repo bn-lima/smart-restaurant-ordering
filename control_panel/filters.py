@@ -1,6 +1,5 @@
 import django_filters
-from kitchen.models import Order
-
+from kitchen.models import Order    
 class DeliveredOrdersFilter(django_filters.FilterSet): # classe para filtrar pedido por data de criação e data que foi entregue
 
     created_at = django_filters.DateTimeFilter( 
@@ -13,6 +12,15 @@ class DeliveredOrdersFilter(django_filters.FilterSet): # classe para filtrar ped
         lookup_expr="lte" # pega registros até a data (menor ou igual)
     )
 
+    class Meta:
+        model = Order
+        fields = []
+class PendingOrdersFilter(django_filters.FilterSet):
+
+    created_at = django_filters.DateTimeFilter(
+        field_name="created_at",
+        lookup_expr="gte"
+    )
     class Meta:
         model = Order
         fields = []

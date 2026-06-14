@@ -9,7 +9,7 @@ from rest_framework.response import Response
 from restaurant_menu.services import get_menu_item_by_id
 from kitchen.models import Order
 from django_filters.rest_framework import DjangoFilterBackend
-from .filters import DeliveredOrdersFilter
+from .filters import DeliveredOrdersFilter, PendingOrdersFilter
 class DevicesList(ListAPIView): # View responsável por listar todos os dispositivos
     permission_classes = [permissions.IsAdminUser]
     serializer_class = DeviceListSerializer
@@ -79,3 +79,11 @@ class DeliveredOrders(ListAPIView): # View responsável por listar os pedidos en
     
     filter_backends = [DjangoFilterBackend]
     filterset_class = DeliveredOrdersFilter # Classe de filtro por data
+class PendingOrders(ListAPIView): # View responsável por listar os pedidos não entregues
+    permission_classes = [permissions.IsAdminUser]
+    queryset = Order.objects.filter(delivered=False)
+    serializer_class = AdminOrdersListSerializer
+    pagination_class = OrderListPagination
+
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = PendingOrdersFilter
