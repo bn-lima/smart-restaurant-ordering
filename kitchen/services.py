@@ -1,4 +1,5 @@
 from .models import Order
+from django.utils import timezone
 
 def create_order(cart): # Cria um pedido
     return Order.objects.create(
@@ -14,6 +15,7 @@ def get_order_by_id(id): # Pega um pedido com id específico
 
 def deliver_order(order): # Marca pedido como entregue
     order.delivered = True
+    order.delivered_at = timezone.now()
     return order.save()
 
 def order_exists(cart): # Verifica se um pedido com um carrinho específico já existe

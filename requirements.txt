@@ -3,6 +3,7 @@ asgiref==3.11.1
 certifi==2026.5.20
 charset-normalizer==3.4.7
 Django==6.0.5
+django-filter==25.2
 djangorestframework==3.17.1
 dotenv==0.9.9
 idna==3.18

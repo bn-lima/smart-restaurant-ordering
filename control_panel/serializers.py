@@ -2,6 +2,7 @@ from rest_framework import serializers
 from devices.models import Device
 from restaurant_menu.models import MenuItem
 from devices.validators import PASSWORD_VALIDATOR
+from kitchen.models import Order
 
 class DeviceListSerializer(serializers.ModelSerializer): # Serializer responsável por listar todos os dispositivos
     device_id = serializers.SerializerMethodField() # Id do dispositivo
@@ -126,3 +127,8 @@ class ConfirmationPasswordSerializier(serializers.Serializer): # Serializer resp
             raise serializers.ValidationError("Invalid confirmation password")
         
         return data
+    
+class AdminOrdersListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Order
+        fields = '__all__'

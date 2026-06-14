@@ -1,5 +1,5 @@
 from django.urls import path, include
-from .views import DevicesList, UpdateDevice, CreateDevice, UpdateMenuItem, DeleteMenuItem
+from .views import DevicesList, UpdateDevice, CreateDevice, UpdateMenuItem, DeleteMenuItem, DeliveredOrders
 
 urlpatterns = [
     path("devices/", DevicesList.as_view(), name="devices"), # Lista todos os dispositivos
@@ -14,5 +14,9 @@ urlpatterns = [
             path("update/", UpdateMenuItem.as_view(), name="update"), # Atualiza dados de um item do menu
             path("delete/", DeleteMenuItem.as_view(), name="delete") # Deleta um item do menu
         ])),
+    ])),
+    
+    path("orders/", include([
+        path("delivered/", DeliveredOrders.as_view(), name="delivered")
     ]))
 ]

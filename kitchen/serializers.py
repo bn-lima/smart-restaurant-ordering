@@ -27,10 +27,8 @@ class ShowCartOrderSerializer(serializers.ModelSerializer): # Serializer respons
     class Meta:
         model = Cart
         fields = ("items",)
-
 class OrdersSerializer(serializers.ModelSerializer): # Serializer responsável por serializar os pedidos ainda não entregues
     cart = ShowCartOrderSerializer()
-
     class Meta:
         model = Order
         exclude = ("delivered_at", "delivered")
