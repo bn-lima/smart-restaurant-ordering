@@ -1,5 +1,5 @@
 from django.urls import path, include
-from .views import DevicesList, UpdateDevice, CreateDevice, UpdateMenuItem, DeleteMenuItem, DeliveredOrders, PendingOrders
+from .views import DevicesList, UpdateDevice, CreateDevice, UpdateMenuItem, DeleteMenuItem, DeliveredOrders, PendingOrders, OrderDetail
 
 urlpatterns = [
     path("devices/", DevicesList.as_view(), name="devices"), # Lista todos os dispositivos
@@ -19,5 +19,7 @@ urlpatterns = [
     path("orders/", include([
         path("delivered/", DeliveredOrders.as_view(), name="delivered"),
         path("pending/", PendingOrders.as_view(), name="pending")
-    ]))
+    ])),
+
+    path("order/<int:pk>/detail/", OrderDetail.as_view(), name="detail")
 ]
