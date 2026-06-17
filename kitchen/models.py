@@ -1,7 +1,7 @@
 from django.db import models
 from cart.models import Cart
 
-class Order(models.Model):
+class Order(models.Model): # Modelo que representa o pedido
    cart = models.OneToOneField(Cart, on_delete=models.CASCADE)
    delivered = models.BooleanField(default=False)
    created_at = models.DateTimeField(auto_now_add=True)

@@ -16,7 +16,7 @@ class DeliveredOrdersFilter(django_filters.FilterSet): # classe para filtrar ped
         model = Order
         fields = []
 
-class PendingOrdersFilter(django_filters.FilterSet):
+class PendingOrdersFilter(django_filters.FilterSet): # Classe para filtrar pedidos não entregues
 
     created_at = django_filters.DateTimeFilter(
         field_name="created_at",

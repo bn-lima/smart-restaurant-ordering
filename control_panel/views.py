@@ -1,8 +1,8 @@
-from rest_framework.generics import ListAPIView
+from rest_framework.generics import ListAPIView, RetrieveAPIView
 from devices.models import Device
 from .pagination import DeviceListPagination, OrderListPagination
 from rest_framework import permissions, status
-from .serializers import DeviceListSerializer, UpdateDeviceSerializer, CreateDeviceSerializer, UpdateMenuItemSerializer, ConfirmationPasswordSerializier, AdminOrdersListSerializer
+from .serializers import DeviceListSerializer, UpdateDeviceSerializer, CreateDeviceSerializer, UpdateMenuItemSerializer, ConfirmationPasswordSerializier, AdminOrdersListSerializer, AdminOrderDetailSerializer
 from rest_framework.views import APIView
 from devices.services import get_device_by_id
 from rest_framework.response import Response
@@ -92,3 +92,8 @@ class PendingOrders(ListAPIView): # View responsável por listar os pedidos não
 
     filter_backends = [DjangoFilterBackend]
     filterset_class = PendingOrdersFilter
+
+class OrderDetail(RetrieveAPIView): # View responsável por mostrar os detalhes de um pedido específico
+    permission_classes = [permissions.IsAdminUser]
+    queryset = Order.objects.all()
+    serializer_class = AdminOrderDetailSerializer

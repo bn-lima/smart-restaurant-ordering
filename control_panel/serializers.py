@@ -3,6 +3,7 @@ from devices.models import Device
 from restaurant_menu.models import MenuItem
 from devices.validators import PASSWORD_VALIDATOR
 from kitchen.models import Order
+from cart.models import Cart, CartItem
 
 class DeviceListSerializer(serializers.ModelSerializer): # Serializer responsável por listar todos os dispositivos
     device_id = serializers.SerializerMethodField() # Id do dispositivo
@@ -129,6 +130,43 @@ class ConfirmationPasswordSerializier(serializers.Serializer): # Serializer resp
         return data
     
 class AdminOrdersListSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = Order
         fields = '__all__'
+
+class AdminCartItemsDetailSerializer(serializers.ModelSerializer): # Mostra os itens de um carrinho
+    menu_item_name = serializers.SerializerMethodField()
+    menu_item_unit_price = serializers.SerializerMethodField()
+    menu_item_subtotal = serializers.SerializerMethodField()
+
+    class Meta:
+        model = CartItem
+        fields = ("menu_item", "menu_item_name", "quantity", "menu_item_unit_price", "menu_item_subtotal")
+
+    def get_menu_item_name(self, obj):
+        return obj.menu_item.item_name
+    
+    def get_menu_item_subtotal(self, obj):
+        return obj.get_subtotal()
+    
+    def get_menu_item_unit_price(self, obj):
+        return obj.menu_item.item_price
+
+class AdminCartDetailSerializer(serializers.ModelSerializer): # Mostra o carrinho do pedido
+    items = AdminCartItemsDetailSerializer(many=True)
+
+    class Meta:
+        model = Cart
+        fields = ("created_at", "status", "items")
+
+class AdminOrderDetailSerializer(serializers.ModelSerializer): # Serializer responsável por mostrar os detalhes de um pedido específico
+    cart = AdminCartDetailSerializer() # Carrinho do pedido
+    order_id = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Order
+        fields = ("order_id", "delivered", "created_at", "delivered_at", "cart")
+
+    def get_order_id(self, obj):
+        return int(obj.id)
