@@ -13,7 +13,8 @@ class DeviceListSerializer(serializers.ModelSerializer): # Serializer responsáv
         fields = ("username", "function", "device_id")
 
     def get_device_id(self, obj): # Retorna o id do dispositivo
-        return int(obj.id)  
+        return int(obj.id)
+    
 class UpdateDeviceSerializer(serializers.ModelSerializer): # Serializer responsável por atualizar dados do dispositivo
     confirmation_password = serializers.CharField(required=True, max_length=128, write_only=True) # Senha de confirmação do super usuário
     confirm_password = serializers.CharField(required=False, max_length=128, write_only=True, validators=[PASSWORD_VALIDATOR]) # Confirmar nova senha
@@ -90,6 +91,13 @@ class CreateDeviceSerializer(serializers.ModelSerializer): # Serializer respons�
         device.save()
 
         return device
+    
+class CreateMenuItemSerializer(serializers.ModelSerializer): # Serializer responsável por criar um item do menu
+
+    class Meta:
+        model = MenuItem
+        fields = '__all__'
+
 class UpdateMenuItemSerializer(serializers.ModelSerializer): # Serializer responsável por atualizar dados de um item do menu
     confirmation_password = serializers.CharField(max_length=128, required=True, write_only=True)
     class Meta:

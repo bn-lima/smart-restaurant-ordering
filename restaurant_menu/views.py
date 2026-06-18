@@ -1,17 +1,22 @@
 from .models import MenuItem
-from rest_framework.views import APIView
-from rest_framework.generics import ListAPIView, CreateAPIView, RetrieveAPIView
-from rest_framework.response import Response
-from rest_framework import status, permissions
+from rest_framework.generics import ListAPIView, RetrieveAPIView
+from rest_framework import permissions
 from django.contrib.postgres.search import SearchQuery, SearchVector
-from .serializers import MenuItemsSerializer, CreateMenuItemSerializer, MenuItemDetailSerializer
+from .serializers import MenuItemsSerializer, MenuItemDetailSerializer
 from .pagination import MenuItemsPagination
+from rest_framework.response import Response
+
 class MenuItems(ListAPIView):
     permission_classes = [permissions.IsAuthenticated]
     serializer_class = MenuItemsSerializer
     queryset = MenuItem.objects.all()
     pagination_class = MenuItemsPagination
 
+    def list(self, request, *args, **kwargs):
+        if request.user.function == "kitchen":
+            return Response({"detail": "You do not have permission to access this endpoint"}, status=403)
+        return super().list(request, *args, **kwargs)
+        
     def get_queryset(self):
         search_qp = self.request.query_params.get("search") # Pega o parâmetro de pesquisa enviado na URL
 
@@ -26,10 +31,7 @@ class MenuItems(ListAPIView):
             return queryset.annotate(search=search_vector).filter(search=search_query) # Adiciona o campo de busca ao queryset e filtra os resultados
         
         return queryset
-class CreateMenuItem(CreateAPIView): # View responsável por criar um novo item no menu
-    permission_classes = [permissions.IsAdminUser]
-    serializer_class = CreateMenuItemSerializer
-    queryset = MenuItem.objects.all()
+    
 class MenuItemDetail(RetrieveAPIView): # View responsável por mostrar os detalhes de um item específico no menu
     permission_classes =  [permissions.IsAuthenticated]
     queryset = MenuItem.objects.filter(active=True)
