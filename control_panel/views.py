@@ -2,7 +2,7 @@ from rest_framework.generics import ListAPIView, RetrieveAPIView
 from devices.models import Device
 from .pagination import DeviceListPagination, OrderListPagination
 from rest_framework import permissions, status
-from .serializers import DeviceListSerializer, UpdateDeviceSerializer, CreateDeviceSerializer, UpdateMenuItemSerializer, ConfirmationPasswordSerializier, AdminOrdersListSerializer, AdminOrderDetailSerializer
+from .serializers import DeviceListSerializer, UpdateDeviceSerializer, CreateDeviceSerializer, UpdateMenuItemSerializer, ConfirmationPasswordSerializier, AdminOrdersListSerializer, AdminOrderDetailSerializer, CreateMenuItemSerializer
 from rest_framework.views import APIView
 from devices.services import get_device_by_id
 from rest_framework.response import Response
@@ -16,6 +16,7 @@ class DevicesList(ListAPIView): # View responsável por listar todos os disposit
     serializer_class = DeviceListSerializer
     pagination_class = DeviceListPagination
     queryset = Device.objects.all()
+    
 class UpdateDevice(APIView): # View responsável por atualizar dados de um dispositivo específico
     permission_classes = [permissions.IsAdminUser]
 
@@ -43,6 +44,17 @@ class CreateDevice(APIView): # View responsável por criar um dispositivo via ad
         return Response({"detail": "Device created successfully"}, status=status.HTTP_201_CREATED)
 
 # Menu item
+
+class CreateMenuItem(APIView): # View responsável por criar um item do menu via admin
+    permission_classes = [permissions.IsAdminUser]
+
+    def post(self, request, *args, **kwargs):
+        serializer = CreateMenuItemSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        return Response({"detail": "Menu item created successfully"}, status=status.HTTP_201_CREATED)
+
 class UpdateMenuItem(APIView): # View responsável por atualizar dados de um item do menu
     permission_classes = [permissions.IsAdminUser]
 
@@ -75,6 +87,8 @@ class DeleteMenuItem(APIView): # View responsável por deletar um item do menu
         
         return Response(status.HTTP_204_NO_CONTENT)
     
+# Order
+
 class DeliveredOrders(ListAPIView): # View responsável por listar os pedidos entregues
     permission_classes = [permissions.IsAdminUser]
     queryset = Order.objects.filter(delivered=True)
