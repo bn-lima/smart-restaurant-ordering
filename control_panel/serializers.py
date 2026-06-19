@@ -20,7 +20,7 @@ class UpdateDeviceSerializer(serializers.ModelSerializer): # Serializer respons�
     confirm_password = serializers.CharField(required=False, max_length=128, write_only=True, validators=[PASSWORD_VALIDATOR]) # Confirmar nova senha
     class Meta:
         model = Device
-        fields = ("username", "password", "function", "confirmation_password", "confirm_password")
+        fields = ("username", "password", "function", "confirmation_password", "confirm_password", "point_terminal_id")
 
         extra_kwargs = { # Adiciona parâmetros extras pros campos username, password e function
             "username": {"required": False, "validators": []},
@@ -35,7 +35,10 @@ class UpdateDeviceSerializer(serializers.ModelSerializer): # Serializer respons�
         confirm_password = data.get("confirm_password") # Confirmar nova senha
        
         if not authenticated_device.check_password(data["confirmation_password"]): # Valida se a senha do super usuário digitada está correta
-            raise serializers.ValidationError("Invalid password")   
+            raise serializers.ValidationError("Invalid confirmation password")
+
+        if data.get("function") == "checkout" and not data.get("point_terminal_id"): # O point_terminal_id é obrigatório quando a função selecionada é checkout
+            raise serializers.ValidationError("The point_terminal_id field is required when function is set to checkout")
         
         if new_password or confirm_password:
 
@@ -65,9 +68,10 @@ class UpdateDeviceSerializer(serializers.ModelSerializer): # Serializer respons�
 class CreateDeviceSerializer(serializers.ModelSerializer): # Serializer responsável por criar um dispositivo via admin
     confirmation_password = serializers.CharField(max_length=128, write_only=True) # Senha de confirmação do super usuário
     confirm_password = serializers.CharField(max_length=128, validators=[PASSWORD_VALIDATOR], write_only=True) # Confirmar senha do dispositivo
+
     class Meta:
         model = Device
-        fields = ("username", "password", "confirm_password", "confirmation_password","function")
+        fields = ("username", "password", "confirm_password", "confirmation_password","function", "point_terminal_id")
 
     def validate(self, data):
         super_user = self.context.get("super_user") # Super usuário responsável pela criação do dispositivo
@@ -77,6 +81,9 @@ class CreateDeviceSerializer(serializers.ModelSerializer): # Serializer respons�
         
         if data.get("password") != data.get("confirm_password"): # Valida se as senhas batem
             raise serializers.ValidationError("Passwords do not match")
+
+        if data.get("function")  == "checkout" and not data.get("point_terminal_id"): # O point_terminal_id é obrigatório quando a função selecionada é checkout
+            raise serializers.ValidationError("The point_terminal_id field is required when function is set to checkout")
         
         return data
     

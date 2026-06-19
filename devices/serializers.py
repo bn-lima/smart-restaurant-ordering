@@ -11,7 +11,7 @@ class RegisterDeviceSerializer(serializers.ModelSerializer): # Serializer respon
     confirm_password = serializers.CharField(required=True, max_length=128, validators=[PASSWORD_VALIDATOR], write_only=True) # Confirmar senha
     class Meta:
         model = Device
-        fields = ("username", "password", "confirm_password", "device_authentication_token", "function")
+        fields = ("username", "password", "confirm_password", "device_authentication_token", "function", "point_terminal_id")
 
     def validate(self, data):
 
@@ -20,6 +20,9 @@ class RegisterDeviceSerializer(serializers.ModelSerializer): # Serializer respon
         
         if data["password"] != data["confirm_password"]: # Verifica se as senhas batem
             raise serializers.ValidationError("Passwords do not match")
+        
+        if data.get("function") == "checkout" and not data.get("point_terminal_id"): # O point_terminal_id é obrigatório quando a função selecionada é checkout
+            raise serializers.ValidationError("The point_terminal_id field is required when function is set to checkout")
         
         return data
     
