@@ -28,6 +28,12 @@ class UpdateDeviceSerializer(serializers.ModelSerializer): # Serializer respons�
             "function": {"required": False}
         }
 
+class DeviceDetailSerializer(serializers.ModelSerializer): # Serializer responsável por mostrar os detalhes de um dispositivo
+
+    class Meta:
+        model = Device
+        exclude = ("last_login", "first_name", "last_name", "groups", "is_active", "password", "email", "user_permissions")
+
     def validate(self, data):
         authenticated_device = self.context.get("authenticated_device") # Super usuário
 
