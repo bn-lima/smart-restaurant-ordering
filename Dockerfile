@@ -13,4 +13,4 @@ RUN pip install --upgrade pip && pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-CMD ["sh", "-c", "while ! nc -z db 5432; do sleep 1; done; python manage.py migrate && python manage.py runserver 0.0.0.0:8000"]
+CMD ["sh", "-c", "until nc -z db 5432; do sleep 1; done; python manage.py migrate && exec gunicorn smart_restaurant.wsgi:application --bind 0.0.0.0:8000 --workers 3 --worker-class gthread --threads 2 --timeout 120 --keep-alive 5"]

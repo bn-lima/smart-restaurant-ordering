@@ -6,7 +6,9 @@ Django==6.0.5
 django-filter==25.2
 djangorestframework==3.17.1
 dotenv==0.9.9
+gunicorn==26.0.0
 idna==3.18
+packaging==26.2
 pillow==12.2.0
 psycopg==3.3.4
 psycopg-binary==3.3.4
@@ -15,4 +17,3 @@ requests==2.34.2
 sqlparse==0.5.5
 typing_extensions==4.15.0
 urllib3==2.7.0
-django-filter

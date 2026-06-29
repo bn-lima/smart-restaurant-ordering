@@ -30,13 +30,12 @@ MP_WEBHOOK_SECRET = os.getenv("MP_WEBHOOK_SECRET")
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-%u)q#3cc^dgp)q-z469@a(+l4tarsbsi_2**%*fggu@a&hj$=v'
+SECRET_KEY = os.getenv("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = ["*"]
-
+ALLOWED_HOSTS = [".onrender.com"]
 
 # Application definition
 
@@ -151,3 +150,9 @@ AUTH_USER_MODEL = 'devices.Device'
 
 MEDIA_ROOT = BASE_DIR / "media"
 MEDIA_URL = "/media/"
+
+# Secure
+SECURE_SSL_REDIRECT = True # Redireciona cliente para requisição https se ele veio de http
+SESSION_COOKIE_SECURE = True # Permite que os cookies sejam enviados apenas se a requisição for https
+CSRF_COOKIE_SECURE = True # Permite que csrf token seja enviado apenas se a requisição for https
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")

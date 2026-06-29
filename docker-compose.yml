@@ -23,5 +23,15 @@ services:
       - db
     restart: always
 
+  nginx:
+    image: nginx:latest
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+      - ./media/:/app/media/
+    depends_on:
+      - api
+
 volumes:
    postgres_data:
