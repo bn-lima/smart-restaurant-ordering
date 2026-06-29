@@ -15,12 +15,19 @@ class DeliveredOrdersFilter(django_filters.FilterSet): # classe para filtrar ped
     class Meta:
         model = Order
         fields = []
+
 class PendingOrdersFilter(django_filters.FilterSet):
 
     created_at = django_filters.DateTimeFilter(
         field_name="created_at",
         lookup_expr="gte"
     )
+
+    created_at_to = django_filters.DateTimeFilter(
+        field_name="created_at",
+        lookup_expr="lte"
+    )
+
     class Meta:
         model = Order
         fields = []
