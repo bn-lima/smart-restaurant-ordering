@@ -8,11 +8,21 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 load_dotenv()
 
+# Docker PostgreSQL vars
+
 POSTGRES_HOST = os.getenv("POSTGRES_HOST")
 POSTGRES_USER=  os.getenv("POSTGRES_USER")
 POSTGRES_PASSWORD = os.getenv("POSTGRES_PASSWORD")
 POSTGRES_PORT = os.getenv("POSTGRES_PORT")
 POSTGRES_DB = os.getenv("POSTGRES_DB")
+
+# Render PostgreSQL vars
+
+RENDER_POSTGRES_HOST = os.getenv("RENDER_POSTGRES_HOST")
+RENDER_POSTGRES_USER = os.getenv("RENDER_POSTGRES_USER")
+RENDER_POSTGRES_PASSWORD = os.getenv("RENDER_POSTGRES_PASSWORD")
+RENDER_POSTGRES_PORT = os.getenv("RENDER_POSTGRES_PORT")
+RENDER_POSTGRES_DB = os.getenv("RENDER_POSTGRES_DB")
 
 # Device
 
@@ -91,14 +101,13 @@ WSGI_APPLICATION = 'smart_restaurant.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': POSTGRES_DB,
-        'HOST': POSTGRES_HOST,
-        'USER': POSTGRES_USER,
-        'PORT': POSTGRES_PORT,
-        'PASSWORD': POSTGRES_PASSWORD
+        'NAME': RENDER_POSTGRES_DB,
+        'HOST': RENDER_POSTGRES_HOST,
+        'USER': RENDER_POSTGRES_USER,
+        'PORT': RENDER_POSTGRES_PORT,
+        'PASSWORD': RENDER_POSTGRES_PASSWORD,
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators
