@@ -8,14 +8,6 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 load_dotenv()
 
-# Docker PostgreSQL vars
-
-POSTGRES_HOST = os.getenv("POSTGRES_HOST")
-POSTGRES_USER=  os.getenv("POSTGRES_USER")
-POSTGRES_PASSWORD = os.getenv("POSTGRES_PASSWORD")
-POSTGRES_PORT = os.getenv("POSTGRES_PORT")
-POSTGRES_DB = os.getenv("POSTGRES_DB")
-
 # Render PostgreSQL vars
 
 RENDER_POSTGRES_HOST = os.getenv("RENDER_POSTGRES_HOST")
