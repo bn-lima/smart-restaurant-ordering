@@ -4,6 +4,9 @@ from .constants import DeviceFunction
 
 class Device(AbstractUser):
     function = models.CharField(max_length=10, choices=DeviceFunction.choices()) # Campo que representa a função que o dispositivo vai realizar no restaurante
+    login_attempts = models.IntegerField(default=0)
+    blocked_until = models.DateTimeField(blank=True, null=True)
+    is_blocked = models.BooleanField(default=False)
 
     USERNAME_FIELD = "username"
 

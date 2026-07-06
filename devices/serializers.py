@@ -2,7 +2,7 @@ from rest_framework import serializers
 from .models import Device
 from django.conf import settings
 from .validators import PASSWORD_VALIDATOR
-from .services import authenticate_device
+from .services import authenticate_device, get_device_by_username, block_if_attempt_limit_reached, unblock_if_expired
 from .constants import DeviceFunction
 
 class RegisterDeviceSerializer(serializers.ModelSerializer): # Serializer responsável por validar token e autenticar o dispositivo
@@ -44,19 +44,46 @@ class LoginDeviceSerializer(serializers.Serializer):
 
     def validate(self, data):
         
+        device = get_device_by_username(data.get("username"))
+
+        if not device:
+            raise serializers.ValidationError(("Device with this username does not exist"))
+        
+        if device.is_blocked:
+            remaining_time = unblock_if_expired(device)
+
+            if remaining_time:
+                raise serializers.ValidationError(f"User is blocked. Please try again in {remaining_time} minutes")
+
         if data["device_login_token"] != settings.DEVICE_LOGIN_TOKEN:
+            device.login_attempts += 1
+            device.save()
+
+            if block_if_attempt_limit_reached(device):
+                raise serializers.ValidationError("User is blocked. Please wait 15 minutes")
+            
             raise serializers.ValidationError("Invalid login token")
         
         token = authenticate_device(data["username"], data["password"])
 
         if not token:
+            device.login_attempts += 1
+            device.save()
+
+            if block_if_attempt_limit_reached(device):
+                raise serializers.ValidationError("User is blocked. Please wait 15 minutes")
+            
             raise serializers.ValidationError("Invalid credentials")
+        
+        device.login_attempts = 0
+        device.save()
         
         data["token"] = token
         return data
     
     def save(self, **kwargs):
         return self.validated_data.get("token")
+    
 class UpdateDeviceFunctionSerializer(serializers.Serializer): # Serializer responsável por mudar a função do dispositivo
     function = serializers.ChoiceField(choices=DeviceFunction.choices()) # Função do dispositivo
 
