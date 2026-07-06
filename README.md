@@ -62,7 +62,7 @@ python manage.py migrate
 python manage.py runserver
 ```
 
-## Endpoints reais (rotas)
+## Endpoints (rotas)
 
 - Admin Django:
 	- `GET /admin/` — painel administrativo do Django
@@ -118,4 +118,3 @@ O projeto usa tokens (DRF TokenAuthentication). Envie `Authorization: Token <log
 
 - O projeto está organizado e pronto para rodar com Docker.
 - Testes unitários são definidos nos arquivos `tests.py` de cada app (rodar `python manage.py test`).
-- Se quiser, atualizo o README com exemplos de payloads, Postman collection ou instruções de CI.
