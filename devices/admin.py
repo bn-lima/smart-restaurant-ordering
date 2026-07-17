@@ -3,5 +3,6 @@ from .models import Device
 
 @admin.register(Device)
 class DeviceAdmin(admin.ModelAdmin):
-    list_display = ("username", "function", "point_terminal_id")
-    search_fields = ("username", "function", "point_terminal_id")
+    list_display = ("username", "function", "login_attempts", "blocked_until", "is_blocked", "point_terminal_id")
+    search_fields = ("username", "function", "login_attempts")
+    list_filter = ("is_blocked", "point_terminal_id")

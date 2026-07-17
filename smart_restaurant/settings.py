@@ -16,6 +16,12 @@ RENDER_POSTGRES_PASSWORD = os.getenv("RENDER_POSTGRES_PASSWORD")
 RENDER_POSTGRES_PORT = os.getenv("RENDER_POSTGRES_PORT")
 RENDER_POSTGRES_DB = os.getenv("RENDER_POSTGRES_DB")
 
+POSTGRES_HOST = os.getenv("POSTGRES_HOST")
+POSTGRES_PASSWORD = os.getenv("POSTGRES_PASSWORD")
+POSTGRES_PORT = os.getenv("POSTGRES_PORT")
+POSTGRES_DB = os.getenv("POSTGRES_DB")
+POSTGRES_USER = os.getenv("POSTGRES_USER")
+
 # Device
 
 DEVICE_AUTHENTICATION_TOKEN = uuid.UUID(os.getenv("DEVICE_AUTHENTICATION_TOKEN"))
@@ -37,7 +43,7 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = [".onrender.com"]
+ALLOWED_HOSTS = [".onrender.com", "localhost", "127.0.0.1"]
 
 # Application definition
 
@@ -135,7 +141,8 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = "/static/"
+STATIC_ROOT = BASE_DIR / "staticfiles"
 
 # DRF
 
@@ -152,8 +159,8 @@ AUTH_USER_MODEL = 'devices.Device'
 MEDIA_ROOT = BASE_DIR / "media"
 MEDIA_URL = "/media/"
 
-# Secure
-SECURE_SSL_REDIRECT = True # Redireciona cliente para requisição https se ele veio de http
-SESSION_COOKIE_SECURE = True # Permite que os cookies sejam enviados apenas se a requisição for https
-CSRF_COOKIE_SECURE = True # Permite que csrf token seja enviado apenas se a requisição for https
+# Secure (Desativado para desenvolvimento)
+SECURE_SSL_REDIRECT = False # Redireciona cliente para requisição https se ele veio de http 
+SESSION_COOKIE_SECURE = False # Permite que os cookies sejam enviados apenas se a requisição for https
+CSRF_COOKIE_SECURE = False # Permite que csrf token seja enviado apenas se a requisição for https
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
